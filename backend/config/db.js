@@ -10,6 +10,7 @@ const mysql = require("mysql2");
 
 
 // const db = mysql.createConnection(process.env.DATABASE_URL);
+const url = new URL(process.env.DATABASE_URL); 
 
 const db = mysql.createConnection({
   host: url.hostname,
