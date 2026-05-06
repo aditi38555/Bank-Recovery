@@ -4,7 +4,9 @@ const invoiceRoutes = require("./routes/invoiceRoutes");
 const app = express();
 
 
-app.use(cors());
+app.use(cors({
+  origin: "*"
+}));
 app.use(express.json());
 app.use("/api", invoiceRoutes);
 app.get("/", (req, res) => {   
@@ -17,4 +19,3 @@ app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });
 
-console.log("ENV:", process.env.DATABASE_URL);
