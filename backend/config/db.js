@@ -32,21 +32,7 @@ db.connect((err) => {
 
 
 
-db.query(`
-  CREATE TABLE IF NOT EXISTS invoices (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    customer_name VARCHAR(255),
-    amount DECIMAL(10,2),
-    date DATE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  )
-`, (err) => {
-  if (err) {
-    console.log("Table Error ❌", err);
-  } else {
-    console.log("Table ready ✅");
-  }
-});
+db.query("DROP TABLE IF EXISTS invoices");
 
 
 module.exports = db;
