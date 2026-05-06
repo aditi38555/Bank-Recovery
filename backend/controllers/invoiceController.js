@@ -95,7 +95,12 @@ const deleteInvoice = (req, res) => {
 
 // ✅ UPDATE
 const updateInvoice = (req, res) => {
-  console.log("UPDATE API HIT"); // 👈 debug
+
+  const formatDate = (date) => {
+  return new Date(date).toISOString().split("T")[0];
+};
+const formattedDate = formatDate(req.body.date);
+
 
   const { id } = req.params;
 
@@ -120,7 +125,7 @@ const updateInvoice = (req, res) => {
 
   db.query(
     sql,
-    [date, email, contact, branch, bank, gstin, amount, cgst, sgst, total, id],
+    [formattedDate, email, contact, branch, bank, gstin, amount, cgst, sgst, total, id],
     (err, result) => {
       if (err) {
         console.log(err);
