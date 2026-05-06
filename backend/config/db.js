@@ -32,8 +32,28 @@ db.connect((err) => {
 
 
 
-db.query("DROP TABLE IF EXISTS invoices");
-
+db.query(`
+  CREATE TABLE invoices (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    date DATE,
+    invoiceNo VARCHAR(50),
+    email VARCHAR(100),
+    contact VARCHAR(20),
+    branch VARCHAR(100),
+    bank VARCHAR(100),
+    gstin VARCHAR(50),
+    amount DECIMAL(10,2),
+    cgst DECIMAL(10,2),
+    sgst DECIMAL(10,2),
+    total DECIMAL(10,2)
+  )
+`, (err) => {
+  if (err) {
+    console.log("Table Error ❌", err);
+  } else {
+    console.log("Table Created ✅");
+  }
+});
 
 module.exports = db;
 
