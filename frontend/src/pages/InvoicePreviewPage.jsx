@@ -20,7 +20,7 @@ export default function InvoicePreviewPage() {
   const fetchInvoice = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:5000/api/invoice/${id}`);
+      const res = await axios.get(`https://bank-recovery.onrender.com/api/invoice/${id}`);
       setData(res.data);
     } catch (err) {
       console.error(err);
@@ -33,7 +33,7 @@ export default function InvoicePreviewPage() {
   const handleDownload = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/invoice",
+        "https://bank-recovery.onrender.com/api/invoice",
         data,
         { responseType: "blob" }
       );

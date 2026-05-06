@@ -18,7 +18,7 @@ export default function InvoicesList() {
 
     const fetchData = async () => {
         try {
-            const res = await axios.get("http://localhost:5000/api/invoices");
+            const res = await axios.get("https://bank-recovery.onrender.com/api/invoices");
             setData(res.data);
         } catch (err) {
             console.error("Data fetch error:", err);
@@ -27,7 +27,7 @@ export default function InvoicesList() {
 
     const handleDelete = async (id) => {
         if (window.confirm("Do you really want to delete this invoice?")) {
-            await axios.delete(`http://localhost:5000/api/invoice/${id}`);
+            await axios.delete(`https://bank-recovery.onrender.com/api/invoice/${id}`);
             fetchData();
         }
     };
@@ -39,7 +39,7 @@ export default function InvoicesList() {
         const total = (amount + Number(cgst) + Number(sgst)).toFixed(2);
 
         const updatedData = { ...editData, amount, cgst, sgst, total };
-        await axios.put(`http://localhost:5000/api/invoice/${editData.id}`, updatedData);
+        await axios.put(`https://bank-recovery.onrender.com/api/invoice/${editData.id}`, updatedData);
         setEditData(null);
         fetchData();
     };

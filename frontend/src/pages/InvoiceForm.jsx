@@ -31,7 +31,7 @@ export default function InvoiceForm() {
     };
 
     try {
-      await axios.post("http://localhost:5000/api/save-invoice", finalData);
+      await axios.post("https://bank-recovery.onrender.com/api/save-invoice", finalData);
       alert("Invoice Created! 🚀");
       navigate("/invoices");
     } catch (error) {
