@@ -8,12 +8,17 @@ const generateInvoice = async (req, res) => {
   try {
 
     const browser = await puppeteer.launch({
-     args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true
-    });
+       args: [
+    ...chromium.args,
+    "--disable-gpu",
+    "--disable-dev-shm-usage",
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+  ],
+  defaultViewport: chromium.defaultViewport,
+  executablePath: await chromium.executablePath(),
+   headless: chromium.headless
+});
 
     const page = await browser.newPage();
 
