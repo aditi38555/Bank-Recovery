@@ -1,15 +1,20 @@
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-core");
+const chromium = require("@sparticuz/chromium");
 const { getInvoiceHTML } = require("../utils/invoiceTemplate");
 const db = require("../config/db"); // 👈 ADD THIS
 
 // ✅ PDF GENERATE (already hai)
 const generateInvoice = async (req, res) => {
   try {
-const browser = await puppeteer.launch({
-  headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"]
 
-});
+    const browser = await puppeteer.launch({
+     args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"],
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true
+    });
+
     const page = await browser.newPage();
 
     const html = getInvoiceHTML(req.body);
@@ -101,9 +106,10 @@ const deleteInvoice = (req, res) => {
 const updateInvoice = (req, res) => {
 
   const formatDate = (date) => {
+  if (!date) return null;
   return new Date(date).toISOString().split("T")[0];
 };
-const formattedDate = formatDate(req.body.date);
+  const formattedDate = formatDate(req.body.date);
 
 
   const { id } = req.params;
@@ -160,4 +166,4 @@ const getSingleInvoice = (req, res) => {
   });
 };
 
-module.exports = { generateInvoice, saveInvoice , getAllInvoices, deleteInvoice, updateInvoice, getSingleInvoice};
+module.exports = { generateInvoice, saveInvoice, getAllInvoices, deleteInvoice, updateInvoice, getSingleInvoice };
