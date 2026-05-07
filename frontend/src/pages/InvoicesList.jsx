@@ -140,11 +140,11 @@ export default function InvoicesList() {
                             <div className="form-grid">
                                 <div className="form-group">
                                     <label>Client Email</label>
-                                    <input value={editData.email} className="form-input" onChange={(e) => setEditData({ ...editData, email: e.target.value })} />
+                                    <input value={editData.email}  required className="form-input" onChange={(e) => setEditData({ ...editData, email: e.target.value })} />
                                 </div>
                                 <div className="form-group">
                                     <label>Amount (Basic)</label>
-                                    <input type="number" value={editData.amount} className="form-input" onChange={(e) => setEditData({ ...editData, amount: e.target.value })} />
+                                    <input type="number" value={editData.amount} required className="form-input" onChange={(e) => setEditData({ ...editData, amount: e.target.value })} />
                                 </div>
                             </div>
                             

@@ -65,27 +65,27 @@ export default function InvoiceForm() {
 
             <div className="form-group">
               <label>Invoice Number</label>
-              <input name="invoiceNo" placeholder="e.g. INV-2026-001" onChange={handleChange} className="form-input" />
+              <input name="invoiceNo" required placeholder="e.g. INV-2026-001" onChange={handleChange} className="form-input" />
             </div>
 
             <div className="form-group">
               <label><Mail size={14} /> Customer Email</label>
-              <input name="email" type="email" placeholder="client@company.com" onChange={handleChange} className="form-input" />
+              <input name="email" type="email" required placeholder="client@company.com" onChange={handleChange} className="form-input" />
             </div>
 
             <div className="form-group">
               <label><Phone size={14} /> Contact Number</label>
-              <input name="contact" placeholder="+91 98765 43210" onChange={handleChange} className="form-input" />
+              <input name="contact" required placeholder="+91 98765 43210" onChange={handleChange} className="form-input" />
             </div>
 
             <div className="form-group">
               <label><Landmark size={14} /> Bank Name</label>
-              <input name="bank" placeholder="HDFC Bank" onChange={handleChange} className="form-input" />
+              <input name="bank" required placeholder="HDFC Bank" onChange={handleChange} className="form-input" />
             </div>
 
             <div className="form-group">
               <label>GSTIN Number</label>
-              <input name="gstin" placeholder="22AAAAA0000A1Z5" onChange={handleChange} className="form-input" />
+              <input name="gstin" required placeholder="22AAAAA0000A1Z5" onChange={handleChange} className="form-input" />
             </div>
 
             <div className="form-group full-width">
