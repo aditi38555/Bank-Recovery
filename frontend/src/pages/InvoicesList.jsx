@@ -1,16 +1,31 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Eye, Edit3, Trash2, Search, FileText, X } from "lucide-react";
+
+import {
+    Eye,
+    Edit3,
+    Trash2,
+    Search,
+    FileText,
+    X,
+    ArrowLeft,
+    Plus,
+} from "lucide-react";
+
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+
 import "../App.css";
 
 export default function InvoicesList() {
+
     const [data, setData] = useState([]);
     const [editData, setEditData] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [errors, setErrors] = useState({});
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -18,37 +33,60 @@ export default function InvoicesList() {
     }, []);
 
     const fetchData = async () => {
+
         try {
-            const res = await axios.get("https://bank-recovery.onrender.com/api/invoices");
+
+            const res = await axios.get(
+                "https://bank-recovery.onrender.com/api/invoices"
+            );
+
             setData(res.data);
+
         } catch (err) {
+
             console.error("Data fetch error:", err);
         }
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Do you really want to delete this invoice?")) {
-            await axios.delete(`https://bank-recovery.onrender.com/api/invoice/${id}`);
+
+        if (
+            window.confirm(
+                "Do you really want to delete this invoice?"
+            )
+        ) {
+
+            await axios.delete(
+                `https://bank-recovery.onrender.com/api/invoice/${id}`
+            );
+
             fetchData();
         }
     };
 
-    // ✅ VALIDATION FUNCTION
+    // VALIDATION
     const validateForm = () => {
+
         let newErrors = {};
 
-        // Email validation
         if (!editData.email?.trim()) {
+
             newErrors.email = "Email is required";
+
         } else if (
             !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(editData.email)
         ) {
+
             newErrors.email = "Enter valid email";
         }
 
-        // Amount validation
-        if (!editData.amount || Number(editData.amount) <= 0) {
-            newErrors.amount = "Amount must be greater than 0";
+        if (
+            !editData.amount ||
+            Number(editData.amount) <= 0
+        ) {
+
+            newErrors.amount =
+                "Amount must be greater than 0";
         }
 
         setErrors(newErrors);
@@ -56,17 +94,26 @@ export default function InvoicesList() {
         return Object.keys(newErrors).length === 0;
     };
 
-    // ✅ UPDATE FUNCTION
+    // UPDATE
     const handleUpdate = async (e) => {
+
         e.preventDefault();
 
-        // Run validation
         if (!validateForm()) return;
 
         try {
-            const amount = Number(editData.amount) || 0;
-            const cgst = (amount * 0.09).toFixed(2);
-            const sgst = (amount * 0.09).toFixed(2);
+
+            const amount =
+                Number(editData.amount) || 0;
+
+            const cgst = (
+                amount * 0.09
+            ).toFixed(2);
+
+            const sgst = (
+                amount * 0.09
+            ).toFixed(2);
+
             const total = (
                 amount +
                 Number(cgst) +
@@ -86,65 +133,125 @@ export default function InvoicesList() {
                 updatedData
             );
 
-            alert("Invoice updated successfully ✅");
+            alert(
+                "Invoice updated successfully ✅"
+            );
 
             setEditData(null);
+
             setErrors({});
+
             fetchData();
 
         } catch (err) {
+
             console.error(err);
+
             alert("Update failed ❌");
         }
     };
 
-    // ✅ SEARCH FILTER
+    // SEARCH FILTER
     const filteredData = data.filter(
         (item) =>
             item.invoiceNo
                 ?.toLowerCase()
                 .includes(searchTerm.toLowerCase()) ||
+
             item.email
                 ?.toLowerCase()
                 .includes(searchTerm.toLowerCase())
     );
 
     return (
+
         <div className="db-container">
+
             <Header />
 
             <main className="db-content">
 
                 {/* HEADER */}
-                <div className="db-header-flex">
+                <motion.div
+                    className="db-header-flex"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                >
+
                     <div>
-                        <h1 className="db-title">All Invoices</h1>
+
+                        <h1 className="db-title">
+                            All Invoices
+                        </h1>
+
                         <p className="db-subtitle">
                             Managing {data.length} records
                         </p>
+
                     </div>
 
-                    <button
-                        onClick={() => navigate("/create")}
-                        className="btn-primary"
+                    {/* RIGHT BUTTONS */}
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "12px",
+                            flexWrap: "wrap",
+                        }}
                     >
-                        + Create Invoice
-                    </button>
-                </div>
+
+                        {/* BACK */}
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="btn-back"
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                            }}
+                        >
+                            <ArrowLeft size={18} />
+                            Back
+                        </button>
+
+                        {/* CREATE */}
+                        <button
+                            onClick={() =>
+                                navigate("/create")
+                            }
+                            className="btn-primary"
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
+                            }}
+                        >
+                            <Plus size={18} />
+                            Create Invoice
+                        </button>
+
+                    </div>
+
+                </motion.div>
 
                 {/* SEARCH */}
-                <div
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
                     style={{
                         position: "relative",
-                        marginBottom: "20px",
+                        marginBottom: "25px",
                     }}
                 >
+
                     <Search
                         style={{
                             position: "absolute",
                             left: "15px",
                             top: "50%",
-                            transform: "translateY(-50%)",
+                            transform:
+                                "translateY(-50%)",
                             color: "#94a3b8",
                         }}
                         size={18}
@@ -157,67 +264,112 @@ export default function InvoicesList() {
                         style={{
                             paddingLeft: "45px",
                             width: "100%",
-                            maxWidth: "400px",
+                            maxWidth: "450px",
                         }}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) =>
+                            setSearchTerm(
+                                e.target.value
+                            )
+                        }
                     />
-                </div>
+
+                </motion.div>
 
                 {/* TABLE */}
-                <div className="table-container">
+                <motion.div
+                    className="table-container"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                >
+
                     <table className="custom-table">
+
                         <thead>
+
                             <tr>
                                 <th>Invoice</th>
                                 <th>Client Details</th>
                                 <th>Date</th>
                                 <th>Total Amount</th>
-                                <th style={{ textAlign: "center" }}>
+
+                                <th
+                                    style={{
+                                        textAlign: "center",
+                                    }}
+                                >
                                     Actions
                                 </th>
                             </tr>
+
                         </thead>
 
                         <tbody>
+
                             {filteredData.map((item) => (
+
                                 <tr key={item.id}>
+
+                                    {/* INVOICE */}
                                     <td>
+
                                         <div
                                             style={{
                                                 display: "flex",
-                                                alignItems: "center",
+                                                alignItems:
+                                                    "center",
                                                 gap: "10px",
                                             }}
                                         >
+
                                             <div
                                                 style={{
-                                                    background: "#f1f5f9",
-                                                    padding: "8px",
-                                                    borderRadius: "8px",
+                                                    background:
+                                                        "#eef2ff",
+
+                                                    padding:
+                                                        "10px",
+
+                                                    borderRadius:
+                                                        "12px",
                                                 }}
                                             >
+
                                                 <FileText
                                                     size={18}
-                                                    color="#6366f1"
+                                                    color="#4f46e5"
                                                 />
+
                                             </div>
 
                                             <span
                                                 style={{
-                                                    fontWeight: "700",
-                                                    color: "#1e293b",
+                                                    fontWeight:
+                                                        "700",
+
+                                                    color:
+                                                        "#1e293b",
                                                 }}
                                             >
-                                                {item.invoiceNo}
+                                                {
+                                                    item.invoiceNo
+                                                }
                                             </span>
+
                                         </div>
+
                                     </td>
 
+                                    {/* CLIENT */}
                                     <td>
+
                                         <div
                                             style={{
-                                                fontSize: "14px",
-                                                fontWeight: "500",
+                                                fontSize:
+                                                    "14px",
+
+                                                fontWeight:
+                                                    "600",
                                             }}
                                         >
                                             {item.email}
@@ -225,28 +377,41 @@ export default function InvoicesList() {
 
                                         <div
                                             style={{
-                                                fontSize: "12px",
-                                                color: "#64748b",
+                                                fontSize:
+                                                    "12px",
+
+                                                color:
+                                                    "#64748b",
                                             }}
                                         >
                                             {item.contact}
                                         </div>
+
                                     </td>
 
+                                    {/* DATE */}
                                     <td
                                         style={{
-                                            color: "#475569",
-                                            fontSize: "14px",
+                                            color:
+                                                "#475569",
+
+                                            fontSize:
+                                                "14px",
                                         }}
                                     >
                                         {item.date}
                                     </td>
 
+                                    {/* TOTAL */}
                                     <td>
+
                                         <div
                                             style={{
-                                                color: "#10b981",
-                                                fontWeight: "800",
+                                                color:
+                                                    "#10b981",
+
+                                                fontWeight:
+                                                    "800",
                                             }}
                                         >
                                             ₹{item.total}
@@ -254,93 +419,180 @@ export default function InvoicesList() {
 
                                         <div
                                             style={{
-                                                fontSize: "10px",
-                                                color: "#94a3b8",
+                                                fontSize:
+                                                    "10px",
+
+                                                color:
+                                                    "#94a3b8",
                                             }}
                                         >
                                             Incl. 18% GST
                                         </div>
+
                                     </td>
 
+                                    {/* ACTIONS */}
                                     <td>
+
                                         <div
                                             style={{
-                                                display: "flex",
+                                                display:
+                                                    "flex",
+
                                                 gap: "10px",
-                                                justifyContent: "center",
+
+                                                justifyContent:
+                                                    "center",
+
+                                                alignItems:
+                                                    "center",
+
+                                                flexWrap:
+                                                    "wrap",
                                             }}
                                         >
+
+                                            {/* VIEW */}
                                             <button
                                                 onClick={() =>
-                                                    navigate(`/preview/${item.id}`)
+                                                    navigate(
+                                                        `/preview/${item.id}`
+                                                    )
                                                 }
                                                 className="action-btn btn-view"
+                                                title="View Invoice"
                                             >
-                                                <Eye size={16} />
+
+                                                <Eye
+                                                    size={18}
+                                                    strokeWidth={2.5}
+                                                    color="#0284c7"
+                                                />
+
                                             </button>
 
+                                            {/* EDIT */}
                                             <button
                                                 onClick={() => {
-                                                    setEditData(item);
-                                                    setErrors({});
+
+                                                    setEditData(
+                                                        item
+                                                    );
+
+                                                    setErrors(
+                                                        {}
+                                                    );
                                                 }}
                                                 className="action-btn btn-edit"
+                                                title="Edit Invoice"
                                             >
-                                                <Edit3 size={16} />
+
+                                                <Edit3
+                                                    size={18}
+                                                    strokeWidth={2.5}
+                                                    color="#7c3aed"
+                                                />
+
                                             </button>
 
+                                            {/* DELETE */}
                                             <button
                                                 onClick={() =>
-                                                    handleDelete(item.id)
+                                                    handleDelete(
+                                                        item.id
+                                                    )
                                                 }
                                                 className="action-btn btn-delete"
+                                                title="Delete Invoice"
                                             >
-                                                <Trash2 size={16} />
+
+                                                <Trash2
+                                                    size={18}
+                                                    strokeWidth={2.5}
+                                                    color="#dc2626"
+                                                />
+
                                             </button>
+
                                         </div>
+
                                     </td>
+
                                 </tr>
+
                             ))}
+
                         </tbody>
+
                     </table>
 
+                    {/* EMPTY */}
                     {filteredData.length === 0 && (
+
                         <div
                             style={{
-                                padding: "60px",
+                                padding: "70px 20px",
                                 textAlign: "center",
                             }}
                         >
+
                             <div
                                 style={{
-                                    fontSize: "40px",
-                                    marginBottom: "10px",
+                                    fontSize: "45px",
+                                    marginBottom:
+                                        "10px",
                                 }}
                             >
                                 🔍
                             </div>
 
-                            <p style={{ color: "#64748b" }}>
+                            <p
+                                style={{
+                                    color: "#64748b",
+                                }}
+                            >
                                 No matching invoices found.
                             </p>
+
                         </div>
+
                     )}
-                </div>
+
+                </motion.div>
 
                 {/* EDIT MODAL */}
                 {editData && (
-                    <div className="edit-overlay">
-                        <div className="edit-modal">
 
+                    <div className="edit-overlay">
+
+                        <motion.div
+                            className="edit-modal"
+                            initial={{
+                                opacity: 0,
+                                scale: 0.9,
+                            }}
+                            animate={{
+                                opacity: 1,
+                                scale: 1,
+                            }}
+                        >
+
+                            {/* CLOSE */}
                             <button
                                 className="btn-back"
                                 style={{
-                                    position: "absolute",
+                                    position:
+                                        "absolute",
+
                                     right: "20px",
+
                                     top: "20px",
+
                                     padding: "8px",
                                 }}
-                                onClick={() => setEditData(null)}
+                                onClick={() =>
+                                    setEditData(null)
+                                }
                             >
                                 <X size={20} />
                             </button>
@@ -349,74 +601,111 @@ export default function InvoicesList() {
                                 className="db-title"
                                 style={{
                                     fontSize: "22px",
-                                    marginBottom: "25px",
+                                    marginBottom:
+                                        "25px",
                                 }}
                             >
                                 Edit Invoice
                             </h2>
 
-                            {/* ✅ FORM */}
-                            <form onSubmit={handleUpdate}>
+                            {/* FORM */}
+                            <form
+                                onSubmit={handleUpdate}
+                            >
 
                                 <div className="form-grid">
 
                                     {/* EMAIL */}
                                     <div className="form-group">
-                                        <label>Client Email</label>
+
+                                        <label>
+                                            Client Email
+                                        </label>
 
                                         <input
                                             type="email"
-                                            value={editData.email}
+                                            value={
+                                                editData.email
+                                            }
                                             className="form-input"
                                             onChange={(e) =>
-                                                setEditData({
-                                                    ...editData,
-                                                    email: e.target.value,
-                                                })
+                                                setEditData(
+                                                    {
+                                                        ...editData,
+                                                        email:
+                                                            e.target.value,
+                                                    }
+                                                )
                                             }
                                         />
 
                                         {errors.email && (
-                                            <p className="error-text" >
-                                                {errors.email}
+                                            <p className="error-text">
+                                                {
+                                                    errors.email
+                                                }
                                             </p>
                                         )}
+
                                     </div>
 
                                     {/* AMOUNT */}
                                     <div className="form-group">
-                                        <label>Amount (Basic)</label>
+
+                                        <label>
+                                            Amount
+                                            (Basic)
+                                        </label>
 
                                         <input
                                             type="number"
-                                            value={editData.amount}
+                                            value={
+                                                editData.amount
+                                            }
                                             className="form-input"
                                             onChange={(e) =>
-                                                setEditData({
-                                                    ...editData,
-                                                    amount: e.target.value,
-                                                })
+                                                setEditData(
+                                                    {
+                                                        ...editData,
+                                                        amount:
+                                                            e.target.value,
+                                                    }
+                                                )
                                             }
                                         />
 
                                         {errors.amount && (
-                                            <p className="error-text" >
-                                                {errors.amount}
+                                            <p className="error-text">
+                                                {
+                                                    errors.amount
+                                                }
                                             </p>
                                         )}
+
                                     </div>
+
                                 </div>
 
                                 {/* BUTTONS */}
                                 <div
                                     className="btn-group"
-                                    style={{ marginTop: "30px" }}
+                                    style={{
+                                        marginTop:
+                                            "30px",
+                                    }}
                                 >
+
                                     <button
                                         type="button"
-                                        onClick={() => setEditData(null)}
+                                        onClick={() =>
+                                            setEditData(
+                                                null
+                                            )
+                                        }
                                         className="btn-back"
-                                        style={{ flex: 1 }}
+                                        style={{
+                                            flex: 1,
+                                        }}
                                     >
                                         Cancel
                                     </button>
@@ -424,19 +713,27 @@ export default function InvoicesList() {
                                     <button
                                         type="submit"
                                         className="btn-save"
-                                        style={{ flex: 2 }}
+                                        style={{
+                                            flex: 2,
+                                        }}
                                     >
                                         Save Changes
                                     </button>
+
                                 </div>
 
                             </form>
-                        </div>
+
+                        </motion.div>
+
                     </div>
+
                 )}
+
             </main>
 
             <Footer />
+
         </div>
     );
 }

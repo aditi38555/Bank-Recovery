@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+
 import {
   ArrowLeft,
   Download,
@@ -10,19 +11,23 @@ import {
   LoaderCircle,
 } from "lucide-react";
 
+import { motion } from "framer-motion";
+
 import InvoicePreview from "../components/InvoicePreview";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+
 import "../App.css";
 
 export default function InvoicePreviewPage() {
   const { id } = useParams();
+
   const navigate = useNavigate();
 
   const [data, setData] = useState(null);
+
   const [loading, setLoading] = useState(true);
 
-  // ✅ DOWNLOAD LOADING STATE
   const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
@@ -41,6 +46,7 @@ export default function InvoicePreviewPage() {
 
     } catch (err) {
       console.error(err);
+
       alert("Error fetching invoice ❌");
 
     } finally {
@@ -48,17 +54,17 @@ export default function InvoicePreviewPage() {
     }
   };
 
-  // ✅ DOWNLOAD FUNCTION
+  // DOWNLOAD PDF
   const handleDownload = async () => {
     try {
-
-      // START LOADING
       setDownloading(true);
 
       const res = await axios.post(
         "https://bank-recovery.onrender.com/api/invoice",
         data,
-        { responseType: "blob" }
+        {
+          responseType: "blob",
+        }
       );
 
       const url = window.URL.createObjectURL(
@@ -68,6 +74,7 @@ export default function InvoicePreviewPage() {
       const a = document.createElement("a");
 
       a.href = url;
+
       a.download = `Invoice-${data.invoiceNo || id}.pdf`;
 
       document.body.appendChild(a);
@@ -80,60 +87,50 @@ export default function InvoicePreviewPage() {
 
     } catch (err) {
       console.error(err);
+
       alert("PDF download failed ❌");
 
     } finally {
-
-      // STOP LOADING
       setDownloading(false);
     }
   };
 
+  // PRINT
   const handlePrint = () => {
     window.print();
   };
 
   return (
-    <div className="db-container">
+    <div className="preview-page">
+
       <Header />
 
-      <main
-        className="db-content"
-        style={{ backgroundColor: "#f8fafc" }}
-      >
+      <main className="preview-main">
+
         <div className="preview-container">
 
-          {/* ACTION BAR */}
-          <div className="action-bar">
+          {/* TOP BAR */}
+          <motion.div
+            className="top-action-bar"
+            initial={{ opacity: 0, y: -15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
 
             <button
               onClick={() => navigate(-1)}
-              className="btn-primary"
-              style={{
-                background: "transparent",
-                color: "#64748b",
-                boxShadow: "none",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-              }}
+              className="back-btn"
             >
               <ArrowLeft size={18} />
               Back
             </button>
 
-            <div style={{ display: "flex", gap: "12px" }}>
+            <div className="top-actions">
 
               {/* PRINT */}
               <button
                 onClick={handlePrint}
-                className="action-btn btn-view"
-                style={{
-                  padding: "10px 20px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                }}
+                className="action-btn print-btn"
               >
                 <Printer size={18} />
                 Print
@@ -142,15 +139,8 @@ export default function InvoicePreviewPage() {
               {/* DOWNLOAD */}
               <button
                 onClick={handleDownload}
-                className="btn-download"
+                className="action-btn download-btn"
                 disabled={downloading}
-                style={{
-                  opacity: downloading ? 0.7 : 1,
-                  cursor: downloading ? "not-allowed" : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                }}
               >
                 {downloading ? (
                   <>
@@ -158,6 +148,7 @@ export default function InvoicePreviewPage() {
                       size={18}
                       className="spin-icon"
                     />
+
                     Downloading...
                   </>
                 ) : (
@@ -169,40 +160,40 @@ export default function InvoicePreviewPage() {
               </button>
 
             </div>
-          </div>
+          </motion.div>
 
-          {/* MAIN CONTENT */}
+          {/* LOADING */}
           {loading ? (
             <div className="loader-container">
-              <div className="spinner"></div>
 
-              <p
-                style={{
-                  marginTop: "15px",
-                  color: "#64748b",
-                  fontWeight: "500",
-                }}
-              >
+              <div className="premium-spinner"></div>
+
+              <p className="loading-text">
                 Loading Invoice...
               </p>
+
             </div>
           ) : (
-            <div className="animate-fadeIn">
+            <motion.div
+              className="invoice-content"
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
 
               {/* STATUS */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  marginBottom: "20px",
-                  color: "#10b981",
-                  fontWeight: "700",
-                  fontSize: "14px",
-                }}
-              >
+              <div className="invoice-status">
+
                 <FileCheck size={18} />
-                Invoice Ready: {data.invoiceNo || "N/A"}
+
+                <span>
+                  Invoice Ready:
+                </span>
+
+                <strong>
+                  {data.invoiceNo || "N/A"}
+                </strong>
+
               </div>
 
               {/* PAPER */}
@@ -210,70 +201,46 @@ export default function InvoicePreviewPage() {
                 <InvoicePreview data={data} />
               </div>
 
-              {/* FOOTER */}
-              <div
-                className="action-bar"
-                style={{
-                  marginTop: "30px",
-                  justifyContent: "center",
-                  opacity: 0.9,
-                }}
-              >
-                <p
-                  className="db-subtitle"
-                  style={{
-                    margin: 0,
-                    fontSize: "13px",
-                  }}
-                >
-                  <Share2
-                    size={14}
-                    style={{
-                      marginRight: "8px",
-                      verticalAlign: "middle",
-                    }}
-                  />
+              {/* REF */}
+              <div className="reference-box">
 
+                <Share2 size={14} />
+
+                <span>
                   Reference ID:
-                  <span
-                    style={{
-                      color: "#1e293b",
-                      fontWeight: "600",
-                    }}
-                  >
-                    {" "}
-                    {id}
-                  </span>
-                </p>
+                </span>
+
+                <strong>{id}</strong>
+
               </div>
-            </div>
+
+            </motion.div>
           )}
 
-          <div
-            style={{
-              marginTop: "30px",
-              textAlign: "center",
-              paddingBottom: "40px",
-            }}
-          >
-            <p
-              className="db-subtitle"
-              style={{ fontSize: "12px" }}
-            >
+          {/* NOTE */}
+          <div className="note-box">
+
+            <p>
               Note: This is a system-generated document and does not require a physical signature.
             </p>
+
           </div>
 
         </div>
       </main>
 
-      {/* ✅ DOWNLOAD POPUP */}
+      {/* DOWNLOAD POPUP */}
       {downloading && (
         <div className="download-popup-overlay">
-          <div className="download-popup">
+
+          <motion.div
+            className="download-popup"
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+          >
 
             <LoaderCircle
-              size={40}
+              size={42}
               className="spin-icon"
             />
 
@@ -282,11 +249,13 @@ export default function InvoicePreviewPage() {
             <p>
               Please wait while your invoice is being generated.
             </p>
-          </div>
+
+          </motion.div>
         </div>
       )}
 
       <Footer />
+
     </div>
   );
 }

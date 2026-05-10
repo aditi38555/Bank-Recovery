@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
 import {
   ArrowLeft,
   Save,
@@ -11,9 +12,13 @@ import {
   Calendar,
   Landmark,
 } from "lucide-react";
+
+import { motion } from "framer-motion";
+
 import "../App.css";
 
 export default function InvoiceForm() {
+
   const navigate = useNavigate();
 
   const [data, setData] = useState({
@@ -27,13 +32,16 @@ export default function InvoiceForm() {
     amount: "",
   });
 
-  // ✅ ERROR STATE
+  // ERROR STATE
   const [errors, setErrors] = useState({});
 
+  // CALCULATIONS
   const amount = Number(data.amount) || 0;
+
   const taxRate = 0.09;
 
   const cgst = (amount * taxRate).toFixed(2);
+
   const sgst = (amount * taxRate).toFixed(2);
 
   const total = (
@@ -42,22 +50,24 @@ export default function InvoiceForm() {
     Number(sgst)
   ).toFixed(2);
 
-  // ✅ HANDLE CHANGE
+  // HANDLE CHANGE
   const handleChange = (e) => {
+
     setData({
       ...data,
       [e.target.name]: e.target.value,
     });
 
-    // remove error while typing
+    // REMOVE ERROR WHILE TYPING
     setErrors({
       ...errors,
       [e.target.name]: "",
     });
   };
 
-  // ✅ VALIDATION FUNCTION
+  // VALIDATION
   const validateForm = () => {
+
     let newErrors = {};
 
     // DATE
@@ -65,7 +75,7 @@ export default function InvoiceForm() {
       newErrors.date = "Invoice date is required";
     }
 
-    // INVOICE NO
+    // INVOICE NUMBER
     if (!data.invoiceNo.trim()) {
       newErrors.invoiceNo = "Invoice number is required";
     }
@@ -73,6 +83,7 @@ export default function InvoiceForm() {
     // EMAIL
     if (!data.email.trim()) {
       newErrors.email = "Email is required";
+
     } else if (
       !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(data.email)
     ) {
@@ -82,6 +93,7 @@ export default function InvoiceForm() {
     // CONTACT
     if (!data.contact.trim()) {
       newErrors.contact = "Contact number is required";
+
     } else if (!/^[0-9]{10}$/.test(data.contact)) {
       newErrors.contact = "Enter valid 10-digit number";
     }
@@ -94,6 +106,7 @@ export default function InvoiceForm() {
     // GSTIN
     if (!data.gstin.trim()) {
       newErrors.gstin = "GSTIN is required";
+
     } else if (data.gstin.length !== 15) {
       newErrors.gstin = "GSTIN must be 15 characters";
     }
@@ -101,6 +114,7 @@ export default function InvoiceForm() {
     // AMOUNT
     if (!data.amount) {
       newErrors.amount = "Amount is required";
+
     } else if (Number(data.amount) <= 0) {
       newErrors.amount = "Amount must be greater than 0";
     }
@@ -110,11 +124,12 @@ export default function InvoiceForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ SUBMIT
+  // SUBMIT
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
-    // validation check
+    // VALIDATION CHECK
     if (!validateForm()) return;
 
     const finalData = {
@@ -123,76 +138,93 @@ export default function InvoiceForm() {
       cgst,
       sgst,
       total,
+
       amountWords:
         "Rupees " + (data.amount || 0) + " Only",
+
       totalWords:
         "Rupees " + total + " Only",
     };
 
     try {
+
       await axios.post(
         "https://bank-recovery.onrender.com/api/save-invoice",
         finalData
       );
 
-      alert("Invoice Created! 🚀");
+      alert("Invoice Created Successfully 🚀");
 
       navigate("/invoices");
 
     } catch (error) {
+
       console.error(error);
+
       alert("Error saving invoice ❌");
     }
   };
 
   return (
-    <div className="db-container">
-      <div className="db-content">
+    <div className="invoice-page">
+
+      <div className="invoice-container">
 
         {/* HEADER */}
-        <div className="db-header-flex">
+        <motion.div
+          className="invoice-header"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+
           <div>
-            <h1 className="db-title">
+            <h1 className="invoice-title">
               Create New Invoice
             </h1>
 
-            <p className="db-subtitle">
-              Fill in the details to generate a professional bill.
+            <p className="invoice-subtitle">
+              Generate professional GST invoices with modern billing experience.
             </p>
           </div>
 
           <button
-            className="btn-primary"
-            style={{
-              background: "#f1f5f9",
-              color: "#475569",
-            }}
+            className="back-btn"
             onClick={() => navigate(-1)}
           >
-            <ArrowLeft size={18} /> Back
+            <ArrowLeft size={18} />
+            Back
           </button>
-        </div>
 
-        {/* FORM */}
-        <div className="form-card">
+        </motion.div>
+
+        {/* FORM CARD */}
+        <motion.div
+          className="invoice-card"
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
 
           <form
             onSubmit={handleSubmit}
-            className="form-grid"
+            className="invoice-form-grid"
           >
 
             {/* DATE */}
             <div className="form-group">
+
               <label>
-                <Calendar size={14} /> Invoice Date
+                <Calendar size={14} />
+                Invoice Date
               </label>
 
               <input
-                name="date"
                 type="date"
+                name="date"
                 value={data.date}
                 onChange={handleChange}
-                className="form-input"
+                className="invoice-input"
               />
 
               {errors.date && (
@@ -200,18 +232,23 @@ export default function InvoiceForm() {
                   {errors.date}
                 </p>
               )}
+
             </div>
 
             {/* INVOICE NUMBER */}
             <div className="form-group">
-              <label>Invoice Number</label>
+
+              <label>
+                Invoice Number
+              </label>
 
               <input
+                type="text"
                 name="invoiceNo"
                 value={data.invoiceNo}
-                placeholder="e.g. INV-2026-001"
+                placeholder="INV-2026-001"
                 onChange={handleChange}
-                className="form-input"
+                className="invoice-input"
               />
 
               {errors.invoiceNo && (
@@ -219,21 +256,24 @@ export default function InvoiceForm() {
                   {errors.invoiceNo}
                 </p>
               )}
+
             </div>
 
             {/* EMAIL */}
             <div className="form-group">
+
               <label>
-                <Mail size={14} /> Customer Email
+                <Mail size={14} />
+                Customer Email
               </label>
 
               <input
-                name="email"
                 type="email"
+                name="email"
                 value={data.email}
                 placeholder="client@company.com"
                 onChange={handleChange}
-                className="form-input"
+                className="invoice-input"
               />
 
               {errors.email && (
@@ -241,20 +281,24 @@ export default function InvoiceForm() {
                   {errors.email}
                 </p>
               )}
+
             </div>
 
             {/* CONTACT */}
             <div className="form-group">
+
               <label>
-                <Phone size={14} /> Contact Number
+                <Phone size={14} />
+                Contact Number
               </label>
 
               <input
+                type="text"
                 name="contact"
                 value={data.contact}
                 placeholder="9876543210"
                 onChange={handleChange}
-                className="form-input"
+                className="invoice-input"
               />
 
               {errors.contact && (
@@ -262,20 +306,24 @@ export default function InvoiceForm() {
                   {errors.contact}
                 </p>
               )}
+
             </div>
 
             {/* BANK */}
             <div className="form-group">
+
               <label>
-                <Landmark size={14} /> Bank Name
+                <Landmark size={14} />
+                Bank Name
               </label>
 
               <input
+                type="text"
                 name="bank"
                 value={data.bank}
                 placeholder="HDFC Bank"
                 onChange={handleChange}
-                className="form-input"
+                className="invoice-input"
               />
 
               {errors.bank && (
@@ -283,18 +331,23 @@ export default function InvoiceForm() {
                   {errors.bank}
                 </p>
               )}
+
             </div>
 
             {/* GSTIN */}
             <div className="form-group">
-              <label>GSTIN Number</label>
+
+              <label>
+                GSTIN Number
+              </label>
 
               <input
+                type="text"
                 name="gstin"
                 value={data.gstin}
                 placeholder="22AAAAA0000A1Z5"
                 onChange={handleChange}
-                className="form-input"
+                className="invoice-input"
               />
 
               {errors.gstin && (
@@ -302,26 +355,24 @@ export default function InvoiceForm() {
                   {errors.gstin}
                 </p>
               )}
+
             </div>
 
             {/* AMOUNT */}
             <div className="form-group full-width">
+
               <label>
-                <IndianRupee size={14} /> Amount (Exclusive of Tax)
+                <IndianRupee size={14} />
+                Amount (Exclusive of Tax)
               </label>
 
               <input
-                name="amount"
                 type="number"
+                name="amount"
                 value={data.amount}
-                placeholder="Enter base amount"
+                placeholder="Enter Amount"
                 onChange={handleChange}
-                className="form-input"
-                style={{
-                  fontSize: "18px",
-                  fontWeight: "bold",
-                  color: "#6366f1",
-                }}
+                className="invoice-input amount-input"
               />
 
               {errors.amount && (
@@ -329,25 +380,24 @@ export default function InvoiceForm() {
                   {errors.amount}
                 </p>
               )}
+
             </div>
 
             {/* SUMMARY */}
-            <div className="full-width summary-box">
+            <div className="summary-box full-width">
 
               <div className="summary-item">
                 <p>Taxable Amount</p>
-                <h2 style={{ fontSize: "18px" }}>
+
+                <h2>
                   ₹{amount.toLocaleString()}
                 </h2>
               </div>
 
-              <div
-                className="summary-item"
-                style={{ textAlign: "center" }}
-              >
+              <div className="summary-item">
                 <p>GST (18%)</p>
 
-                <h2 style={{ fontSize: "18px" }}>
+                <h2>
                   ₹
                   {(
                     Number(cgst) +
@@ -356,58 +406,44 @@ export default function InvoiceForm() {
                 </h2>
               </div>
 
-              <div
-                className="summary-item"
-                style={{ textAlign: "right" }}
-              >
+              <div className="summary-item">
                 <p>Grand Total</p>
 
                 <h2>
                   ₹{total.toLocaleString()}
                 </h2>
               </div>
+
             </div>
 
             {/* BUTTONS */}
-            <div
-              className="full-width btn-group"
-              style={{
-                marginTop: "20px",
-                display: "flex",
-                gap: "15px",
-              }}
-            >
+            <div className="btn-group full-width">
+
               <button
                 type="button"
-                className="btn-primary"
-                style={{
-                  background: "#e0e7ff",
-                  color: "#4338ca",
-                  flex: 1,
-                }}
+                className="history-btn"
                 onClick={() => navigate("/invoices")}
               >
-                <History size={18} /> View History
+                <History size={18} />
+                View History
               </button>
 
               <button
                 type="submit"
-                className="btn-save"
-                style={{
-                  flex: 2,
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: "10px",
-                }}
+                className="save-btn"
               >
                 <Save size={18} />
                 Save & Generate Invoice
               </button>
+
             </div>
 
           </form>
-        </div>
+
+        </motion.div>
+
       </div>
+
     </div>
   );
 }
