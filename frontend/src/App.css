@@ -2520,3 +2520,47 @@ textarea {
     margin: 10mm;
   }
 }
+
+
+
+
+/* Header buttons container */
+.db-header-btns {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Naya Secondary Outline Button */
+.btn-secondary-outline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.btn-secondary-outline:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: white;
+  transform: translateY(-2px);
+}
+
+/* Mobile responsive buttons */
+@media (max-width: 640px) {
+  .db-header-btns {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-secondary-outline, .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+}

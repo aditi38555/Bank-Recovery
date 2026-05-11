@@ -8,6 +8,7 @@ import {
   Clock,
   CheckCircle,
   BarChart3,
+  List, // Naya icon import kiya
 } from "lucide-react";
 import { motion } from "framer-motion";
 import "../App.css";
@@ -41,19 +42,31 @@ export default function Dashboard() {
         >
           <div>
             <h1 className="db-title">Invoice Dashboard</h1>
-
             <p className="db-subtitle">
               Welcome back! Here is what's happening today.
             </p>
           </div>
 
-          <button
-            className="btn-primary"
-            onClick={() => navigate("/create")}
-          >
-            <Plus size={20} strokeWidth={3} />
-            Create New Invoice
-          </button>
+          {/* Buttons Group */}
+          <div className="db-header-btns">
+            {/* LIST BUTTON */}
+            <button
+              className="btn-secondary-outline"
+              onClick={() => navigate("/invoices")}
+            >
+              <List size={20} />
+              View All Invoices
+            </button>
+
+            {/* CREATE BUTTON */}
+            <button
+              className="btn-primary"
+              onClick={() => navigate("/create")}
+            >
+              <Plus size={20} strokeWidth={3} />
+              Create New
+            </button>
+          </div>
         </motion.div>
 
         {/* Stats Section */}
@@ -70,7 +83,6 @@ export default function Dashboard() {
                 <span className="stat-label">Total Earnings</span>
                 <span className="stat-value">₹84,200</span>
               </div>
-
               <div className="icon-box indigo">
                 <TrendingUp size={24} />
               </div>
@@ -89,7 +101,6 @@ export default function Dashboard() {
                 <span className="stat-label">Pending</span>
                 <span className="stat-value">12</span>
               </div>
-
               <div className="icon-box amber">
                 <Clock size={24} />
               </div>
@@ -108,7 +119,6 @@ export default function Dashboard() {
                 <span className="stat-label">Completed</span>
                 <span className="stat-value">156</span>
               </div>
-
               <div className="icon-box green">
                 <CheckCircle size={24} />
               </div>
@@ -126,20 +136,19 @@ export default function Dashboard() {
           <div className="empty-icon">
             <BarChart3 size={70} className="activity-icon" />
           </div>
-
           <h3 className="activity-title">No Recent Activity</h3>
-
           <p className="activity-text">
             Your business analytics will appear here once you start generating
             invoices. Ready to grow?
           </p>
-
-          <button
-            onClick={() => navigate("/create")}
-            className="secondary-btn"
-          >
-            Get Started Now
-          </button>
+          <div className="btn-group-center">
+             <button
+              onClick={() => navigate("/create")}
+              className="secondary-btn"
+            >
+              Get Started Now
+            </button>
+          </div>
         </motion.div>
       </main>
 
